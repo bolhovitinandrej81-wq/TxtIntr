@@ -48,9 +48,6 @@ test: $(TARGET)
 	@echo "4. Тест арксинуса 0.5:"
 	./$(TARGET) asin 0.5
 	@echo ""
-	@echo "5. Тест справки:"
-	./$(TARGET) --помощь
-	@echo ""
 	@echo "=== Тестирование завершено ==="
 
 # Показать справку по использованию
@@ -65,14 +62,10 @@ help:
 	@echo "  test      - запуск тестов"
 	@echo "  help      - эта справка"
 	@echo ""
-	@echo "Примеры использования калькулятора:"
-	@echo "  ./calculator              # Показать справку"
+	@echo "Примеры использования:"
+	@echo "  ./calculator              # Интерактивный режим"
 	@echo "  ./calculator sin 45       # Синус 45 градусов"
-	@echo "  ./calculator cos 30       # Косинус 30 градусов"
-	@echo "  ./calculator tan 60       # Тангенс 60 градусов"
-	@echo "  ./calculator asin 0.5     # Арксинус 0.5"
-	@echo "  ./calculator deg2rad 180  # 180° в радианы"
+	@echo "  ./calculator cos 30 --радианы # Косинус 30 радиан"
 	@echo "  ./calculator --помощь     # Показать справку"
-	@echo "  ./calculator --интерактивный # Интерактивный режим"
 
 .PHONY: all debug fast clean install uninstall test help

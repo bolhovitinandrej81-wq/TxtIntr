@@ -359,68 +359,55 @@ void runInteractiveMode() {
 // Обработка аргументов командной строки
 void handleCommandLine(int argc, char* argv[]) {
     if (argc == 1) {
-        // Если нет аргументов, показываем справку
-        printHelp();
-        return;
-    }
-    
-    // Простая обработка аргументов
-    std::string arg1 = (argc > 1) ? argv[1] : "";
-    std::string arg2 = (argc > 2) ? argv[2] : "";
-    std::string arg3 = (argc > 3) ? argv[3] : "";
-    
-    // Проверка флагов
-    if (arg1 == "--помощь" || arg1 == "--help") {
-        printHelp();
-        return;
-    }
-    
-    if (arg1 == "--интерактивный" || arg1 == "--interactive") {
+        // Если нет аргументов, запускаем интерактивный режим
         runInteractiveMode();
         return;
     }
     
-    // Проверка операций
-    std::vector<std::string> validOperations = {
-        "sin", "cos", "tan", "ctg", "asin", "acos", "atan", "actg", "deg2rad", "rad2deg"
-    };
+    std::vector<std::string> args(argv + 1, argv + argc);
+    bool useRadians = false;
+    bool interactiveMode = false;
+    std::string operation;
+    double value = 0.0;
     
-    bool isValidOperation = false;
-    for (const auto& op : validOperations) {
-        if (arg1 == op) {
-            isValidOperation = true;
-            break;
+    // Парсинг аргументов
+    for (const auto& arg : args) {
+        if (arg == "--радианы" || arg == "--radians") {
+            useRadians = true;
+        }
+        else if (arg == "--интерактивный" || arg == "--interactive") {
+            interactiveMode = true;
+        }
+        else if (arg == "--помощь" || arg == "--help") {
+            printHelp();
+            return;
+        }
+        else if (operation.empty() && 
+                 (arg == "sin" || arg == "cos" || arg == "tan" || arg == "ctg" ||
+                  arg == "asin" || arg == "acos" || arg == "atan" || arg == "actg" ||
+                  arg == "deg2rad" || arg == "rad2deg")) {
+            operation = arg;
+        }
+        else if (value == 0.0) {
+            try {
+                value = std::stod(arg);
+            } catch (const std::exception& e) {
+                // Игнорируем ошибки преобразования, это может быть неизвестный флаг
+            }
         }
     }
     
-    if (!isValidOperation) {
-        std::cout << "Ошибка: Неизвестная операция '" << arg1 << "'\n";
+    if (interactiveMode) {
+        runInteractiveMode();
+    }
+    else if (!operation.empty() && value != 0.0) {
+        performCommandLineOperation(operation, value, useRadians);
+    }
+    else {
+        std::cout << "Неверные аргументы командной строки.\n";
         printHelp();
-        return;
+        std::exit(1);
     }
-    
-    // Проверка наличия значения
-    if (arg2.empty()) {
-        std::cout << "Ошибка: Отсутствует значение для операции '" << arg1 << "'\n";
-        std::cout << "Использование: ./calculator " << arg1 << " [значение]\n";
-        return;
-    }
-    
-    // Парсинг значения
-    double value;
-    try {
-        value = std::stod(arg2);
-    } catch (const std::exception& e) {
-        std::cout << "Ошибка: Некорректное значение '" << arg2 << "'\n";
-        std::cout << "Значение должно быть числом\n";
-        return;
-    }
-    
-    // Проверка флага радиан
-    bool useRadians = (arg3 == "--радианы" || arg3 == "--radians");
-    
-    // Выполнение операции
-    performCommandLineOperation(arg1, value, useRadians);
 }
 
 int main(int argc, char* argv[]) {
